@@ -21,20 +21,38 @@
 			android:layout_weight="1"
 			android:ems="10"
 			android:hint="https://www.google.com"
-			android:inputType="textNoSuggestions|textUri"/>
+			android:inputType="textNoSuggestions|textUri"
+			android:selectAllOnFocus="true"
+			android:singleLine="true"/>
 
-		<Button
+		<ImageButton
 			android:id="@+id/btn_go"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="GO"/>
+			app:srcCompat="@drawable/ic_arrow_forward_white_24dp"/>
 	</LinearLayout>
 
-	<WebView
-		android:id="@+id/web_view"
+	<RelativeLayout
 		android:layout_weight="1"
 		android:layout_width="match_parent"
-		android:layout_height="0dp"/>
+		android:layout_height="0dp">
+
+		<WebView
+			android:id="@+id/web_view"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"/>
+
+		<ProgressBar
+			android:id="@+id/progress_bar"
+			style="?android:attr/progressBarStyleHorizontal"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:layout_alignParentBottom="true"
+			android:visibility="invisible"/>
+
+
+	</RelativeLayout>
 
 	<LinearLayout
 		android:layout_width="match_parent"
@@ -53,22 +71,28 @@
 			android:layout_height="wrap_content"
 			app:srcCompat="@drawable/ic_arrow_forward_white_24dp"/>
 
-		<Space
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"/>
-
 		<ImageButton
 			android:id="@+id/btn_home"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			app:srcCompat="@drawable/ic_home_white_24dp"/>
 
+		<Space
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"/>
+
 		<ImageButton
 			android:id="@+id/btn_refresh"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			app:srcCompat="@drawable/ic_refresh_white_24dp"/>
+
+		<ImageButton
+			android:id="@+id/btn_stop"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			app:srcCompat="@drawable/ic_cancel_white_24dp"/>
 
 	</LinearLayout>
 
