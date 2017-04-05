@@ -1,11 +1,15 @@
 package com.hsoft.androidwebbrowser;
 
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.JsPromptResult;
+import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -126,6 +130,8 @@ public class MainActivity extends AppCompatActivity {
 				progressBar.setVisibility(View.INVISIBLE);
 				labelOverlay.setVisibility(View.INVISIBLE);
 			}
+
+
 		});
 
 		webView.setWebChromeClient(new WebChromeClient(){
@@ -133,6 +139,43 @@ public class MainActivity extends AppCompatActivity {
 			public void onProgressChanged(WebView view, int newProgress) {
 				super.onProgressChanged(view, newProgress);
 				progressBar.setProgress(newProgress);
+			}
+
+			@Override
+			public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+				builder.setMessage(message).setCancelable(false);
+				builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						result.confirm();
+					}
+				});
+				builder.create().show();
+				return true;
+			}
+
+			@Override
+			public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+				builder.setMessage(message).setCancelable(false);
+				builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						result.confirm();
+					}
+				});
+				builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						result.cancel();
+					}
+				});
+				builder.create().show();
+				return true;
+			}
+
+			@Override
+			public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
+				return super.onJsPrompt(view, url, message, defaultValue, result);
 			}
 		});
 
@@ -181,4 +224,6 @@ public class MainActivity extends AppCompatActivity {
 	private void clickBtnStop() {
 		webView.stopLoading();
 	}
+
+
 }
