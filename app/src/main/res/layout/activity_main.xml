@@ -40,7 +40,15 @@
 		<WebView
 			android:id="@+id/web_view"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"/>
+			android:layout_height="match_parent"
+			/>
+
+		<TextView
+			android:id="@+id/label_overlay"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@color/colorDarkAlpha"
+			android:visibility="invisible"/>
 
 		<ProgressBar
 			android:id="@+id/progress_bar"

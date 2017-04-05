@@ -1,21 +1,19 @@
 package com.hsoft.androidwebbrowser;
 
-import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -76,14 +74,16 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 
 		homeUrl = "http://urdevel.mtorres.urstaging.com/dump.php";
-
 		textUrl = (EditText) findViewById(R.id.text_url);
+
 		ImageButton btnGo = (ImageButton) findViewById(R.id.btn_go);
 		ImageButton btnBack = (ImageButton) findViewById(R.id.btn_back);
 		ImageButton btnForward = (ImageButton) findViewById(R.id.btn_forward);
 		ImageButton btnHome = (ImageButton) findViewById(R.id.btn_home);
 		ImageButton btnRefresh = (ImageButton) findViewById(R.id.btn_refresh);
 		ImageButton btnStop= (ImageButton) findViewById(R.id.btn_stop);
+
+		final TextView labelOverlay = (TextView) findViewById(R.id.label_overlay);
 		final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 		progressBar.setVisibility(View.INVISIBLE);
 		progressBar.setProgress(0);
@@ -106,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 
+		labelOverlay.setVisibility(View.INVISIBLE);
+
 		webView = (WebView) findViewById(R.id.web_view);
 		webView.setWebViewClient(new WebViewClient() {
 			@Override
@@ -113,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
 				super.onPageStarted(view, url, favicon);
 				webView.requestFocus();
 				textUrl.setText(url);
+				labelOverlay.setVisibility(View.VISIBLE);
 				progressBar.setProgress(0);
 				progressBar.setVisibility(View.VISIBLE);
 			}
@@ -121,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
 			public void onPageFinished(WebView view, String url) {
 				super.onPageFinished(view, url);
 				progressBar.setVisibility(View.INVISIBLE);
+				labelOverlay.setVisibility(View.INVISIBLE);
 			}
 		});
 
