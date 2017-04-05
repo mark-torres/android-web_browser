@@ -23,7 +23,7 @@
 			android:hint="https://www.google.com"
 			android:inputType="textNoSuggestions|textUri"
 			android:selectAllOnFocus="true"
-			android:singleLine="true"/>
+			android:maxLines="1"/>
 
 		<ImageButton
 			android:id="@+id/btn_go"
@@ -47,7 +47,7 @@
 			android:id="@+id/label_overlay"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:background="@color/colorDarkAlpha"
+			android:background="@color/colorWhiteAlpha"
 			android:visibility="invisible"/>
 
 		<ProgressBar
