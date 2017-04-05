@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
 				super.onPageStarted(view, url, favicon);
+				webView.requestFocus();
 				textUrl.setText(url);
 				progressBar.setProgress(0);
 				progressBar.setVisibility(View.VISIBLE);
@@ -145,7 +146,6 @@ public class MainActivity extends AppCompatActivity {
 	// UTILS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	private void clickBtnGo() {
-		webView.requestFocus();
 		String urlString = textUrl.getText().toString();
 		if (!urlString.matches("^https?://.+")) {
 			Toast.makeText(this, "Please enter a valid URL", Toast.LENGTH_SHORT).show();
