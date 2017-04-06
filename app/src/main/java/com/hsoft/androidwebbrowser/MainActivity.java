@@ -1,8 +1,11 @@
 package com.hsoft.androidwebbrowser;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.net.MailTo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -77,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		homeUrl = "http://urdevel.mtorres.urstaging.com/dump.php";
+		homeUrl = "https://duckduckgo.com";
 		textUrl = (EditText) findViewById(R.id.text_url);
 
 		ImageButton btnGo = (ImageButton) findViewById(R.id.btn_go);
@@ -131,7 +134,32 @@ public class MainActivity extends AppCompatActivity {
 				labelOverlay.setVisibility(View.INVISIBLE);
 			}
 
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				// check for email url
+				if (MailTo.isMailTo(url)) {
+					MailTo mailTo = MailTo.parse(url);
+					String emailTo = mailTo.getTo() != null ? mailTo.getTo() : "";
+					String emailSubject = mailTo.getSubject() != null ? mailTo.getSubject() : "";
+					String emailBody = mailTo.getBody() != null ? mailTo.getBody() : "";
+					Intent email = new Intent(Intent.ACTION_SEND);
+					email.putExtra(Intent.EXTRA_EMAIL, new String[]{emailTo});
+					email.putExtra(Intent.EXTRA_SUBJECT, emailSubject);
+					email.putExtra(Intent.EXTRA_TEXT, emailBody);
+					email.setType("message/rfc822"); // show email clients only
+					startActivity(Intent.createChooser(email, "Send email using:"));
+					return true;
+				}
 
+				// check for telephone
+				if (url.startsWith("tel:")) {
+					Intent tel = new Intent(Intent.ACTION_DIAL, Uri.parse(url));
+					startActivity(tel);
+					return true;
+				}
+
+				return super.shouldOverrideUrlLoading(view, url);
+			}
 		});
 
 		webView.setWebChromeClient(new WebChromeClient(){
@@ -224,6 +252,4 @@ public class MainActivity extends AppCompatActivity {
 	private void clickBtnStop() {
 		webView.stopLoading();
 	}
-
-
 }
