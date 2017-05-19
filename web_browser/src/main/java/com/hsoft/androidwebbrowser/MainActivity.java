@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		//homeUrl = "http://urdevel.mtorres.urstaging.com/test/webview.html";
 		homeUrl = "https://duckduckgo.com";
 		textUrl = (EditText) findViewById(R.id.text_url);
 
@@ -142,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
 					String emailTo = mailTo.getTo() != null ? mailTo.getTo() : "";
 					String emailSubject = mailTo.getSubject() != null ? mailTo.getSubject() : "";
 					String emailBody = mailTo.getBody() != null ? mailTo.getBody() : "";
+					//https://developer.android.com/reference/android/content/Intent.html#ACTION_SEND
 					Intent email = new Intent(Intent.ACTION_SEND);
 					email.putExtra(Intent.EXTRA_EMAIL, new String[]{emailTo});
 					email.putExtra(Intent.EXTRA_SUBJECT, emailSubject);
@@ -153,8 +155,24 @@ public class MainActivity extends AppCompatActivity {
 
 				// check for telephone
 				if (url.startsWith("tel:")) {
+					// https://developer.android.com/reference/android/content/Intent.html#ACTION_DIAL
 					Intent tel = new Intent(Intent.ACTION_DIAL, Uri.parse(url));
 					startActivity(tel);
+					return true;
+				}
+
+				// check for SMS
+				if (url.startsWith("sms:") || url.startsWith("smsto:")) {
+					// https://developer.android.com/reference/android/content/Intent.html#ACTION_VIEW
+					// https://developer.android.com/reference/android/content/Intent.html#ACTION_SENDTO
+					Intent sms = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+					startActivity(sms);
+					return true;
+				}
+
+				// if URL is not web
+				if (!url.startsWith("http")) {
+					Toast.makeText(MainActivity.this, "Unhandled URL scheme: " + url, Toast.LENGTH_SHORT).show();
 					return true;
 				}
 
