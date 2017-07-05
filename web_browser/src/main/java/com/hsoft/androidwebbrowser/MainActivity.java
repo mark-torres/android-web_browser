@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.MailTo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -80,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		//homeUrl = "http://urdevel.mtorres.urstaging.com/test/webview.html";
 		homeUrl = "https://duckduckgo.com";
 		textUrl = (EditText) findViewById(R.id.text_url);
 
@@ -136,7 +137,27 @@ public class MainActivity extends AppCompatActivity {
 			}
 
 			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+				if (Build.VERSION.SDK_INT >= 21) {
+					String url = request.getUrl().toString();
+
+					if (overrideUrlLoading(url)) {
+						return true;
+					}
+				}
+				return super.shouldOverrideUrlLoading(view, request);
+			}
+
+			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				if (overrideUrlLoading(url)) {
+					return true;
+				} else {
+					return super.shouldOverrideUrlLoading(view, url);
+				}
+			}
+
+			private boolean overrideUrlLoading(String url) {
 				// check for email url
 				if (MailTo.isMailTo(url)) {
 					MailTo mailTo = MailTo.parse(url);
@@ -144,12 +165,17 @@ public class MainActivity extends AppCompatActivity {
 					String emailSubject = mailTo.getSubject() != null ? mailTo.getSubject() : "";
 					String emailBody = mailTo.getBody() != null ? mailTo.getBody() : "";
 					//https://developer.android.com/reference/android/content/Intent.html#ACTION_SEND
-					Intent email = new Intent(Intent.ACTION_SEND);
+					// https://developer.android.com/guide/components/intents-common.html#Email
+					Intent email = new Intent(Intent.ACTION_SENDTO);
+					email.setData(Uri.parse(url)); // show email clients only
 					email.putExtra(Intent.EXTRA_EMAIL, new String[]{emailTo});
 					email.putExtra(Intent.EXTRA_SUBJECT, emailSubject);
 					email.putExtra(Intent.EXTRA_TEXT, emailBody);
-					email.setType("message/rfc822"); // show email clients only
-					startActivity(Intent.createChooser(email, "Send email using:"));
+					if (email.resolveActivity(getPackageManager()) != null) {
+						startActivity(email);
+					} else {
+						showToast("Could not resolve activity for email.");
+					}
 					return true;
 				}
 
@@ -171,12 +197,12 @@ public class MainActivity extends AppCompatActivity {
 				}
 
 				// if URL is not web
-				if (!url.startsWith("http")) {
+				if (!url.startsWith("http:") && !url.startsWith("https:")) {
 					Toast.makeText(MainActivity.this, "Unhandled URL scheme: " + url, Toast.LENGTH_SHORT).show();
 					return true;
 				}
 
-				return super.shouldOverrideUrlLoading(view, url);
+				return false;
 			}
 		});
 
@@ -209,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
 						result.confirm();
 					}
 				});
-				builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+				builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						result.cancel();
@@ -238,10 +264,14 @@ public class MainActivity extends AppCompatActivity {
 
 	// UTILS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+	private void showToast(String message) {
+		Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+	}
+
 	private void clickBtnGo() {
 		String urlString = textUrl.getText().toString();
 		if (!urlString.matches("^https?://.+")) {
-			Toast.makeText(this, "Please enter a valid URL", Toast.LENGTH_SHORT).show();
+			showToast("Please enter a valid URL");
 			return;
 		}
 		webView.loadUrl(urlString);
