@@ -8,6 +8,7 @@ import android.net.MailTo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -30,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
 	private WebView webView;
 	private EditText textUrl;
 	private String homeUrl;
+
+	private SwipeRefreshLayout swipeRefreshLayout;
+	private Boolean pullRefreshSet;
 
 	// CLICK LISTENERS
 
@@ -85,6 +89,11 @@ public class MainActivity extends AppCompatActivity {
 		homeUrl = "https://duckduckgo.com";
 		textUrl = findViewById(R.id.text_url);
 
+		pullRefreshSet = false;
+
+		swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+		swipeRefreshLayout.setEnabled(false);
+
 		ImageButton btnGo = findViewById(R.id.btn_go);
 		ImageButton btnBack = findViewById(R.id.btn_back);
 		ImageButton btnForward = findViewById(R.id.btn_forward);
@@ -127,6 +136,10 @@ public class MainActivity extends AppCompatActivity {
 				labelOverlay.setVisibility(View.VISIBLE);
 				progressBar.setProgress(0);
 				progressBar.setVisibility(View.VISIBLE);
+
+				if (pullRefreshSet && !swipeRefreshLayout.isRefreshing()) {
+					swipeRefreshLayout.setRefreshing(true);
+				}
 			}
 
 			@Override
@@ -134,6 +147,20 @@ public class MainActivity extends AppCompatActivity {
 				super.onPageFinished(view, url);
 				progressBar.setVisibility(View.INVISIBLE);
 				labelOverlay.setVisibility(View.INVISIBLE);
+
+				if (!pullRefreshSet) {
+					// configure swipe refresh
+					swipeRefreshLayout.setEnabled(true);
+					swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+						@Override
+						public void onRefresh() {
+							webView.reload();
+						}
+					});
+					pullRefreshSet = true;
+				} else {
+					swipeRefreshLayout.setRefreshing(false);
+				}
 			}
 
 			@Override
