@@ -83,17 +83,17 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 
 		homeUrl = "https://duckduckgo.com";
-		textUrl = (EditText) findViewById(R.id.text_url);
+		textUrl = findViewById(R.id.text_url);
 
-		ImageButton btnGo = (ImageButton) findViewById(R.id.btn_go);
-		ImageButton btnBack = (ImageButton) findViewById(R.id.btn_back);
-		ImageButton btnForward = (ImageButton) findViewById(R.id.btn_forward);
-		ImageButton btnHome = (ImageButton) findViewById(R.id.btn_home);
-		ImageButton btnRefresh = (ImageButton) findViewById(R.id.btn_refresh);
-		ImageButton btnStop= (ImageButton) findViewById(R.id.btn_stop);
+		ImageButton btnGo = findViewById(R.id.btn_go);
+		ImageButton btnBack = findViewById(R.id.btn_back);
+		ImageButton btnForward = findViewById(R.id.btn_forward);
+		ImageButton btnHome = findViewById(R.id.btn_home);
+		ImageButton btnRefresh = findViewById(R.id.btn_refresh);
+		ImageButton btnStop= findViewById(R.id.btn_stop);
 
-		final TextView labelOverlay = (TextView) findViewById(R.id.label_overlay);
-		final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+		final TextView labelOverlay = findViewById(R.id.label_overlay);
+		final ProgressBar progressBar = findViewById(R.id.progress_bar);
 		progressBar.setVisibility(View.INVISIBLE);
 		progressBar.setProgress(0);
 
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
 		labelOverlay.setVisibility(View.INVISIBLE);
 
-		webView = (WebView) findViewById(R.id.web_view);
+		webView = findViewById(R.id.web_view);
 		webView.setWebViewClient(new WebViewClient() {
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
 
 				// if URL is not web
 				if (!url.startsWith("http:") && !url.startsWith("https:")) {
-					Toast.makeText(MainActivity.this, "Unhandled URL scheme: " + url, Toast.LENGTH_SHORT).show();
+					showToast("Unhandled URL scheme: " + url);
 					return true;
 				}
 
