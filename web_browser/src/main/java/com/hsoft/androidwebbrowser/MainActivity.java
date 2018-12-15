@@ -6,17 +6,24 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.MailTo;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -34,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
 
 	private SwipeRefreshLayout swipeRefreshLayout;
 	private Boolean pullRefreshSet;
+
+	private final String TAG = "ANDROID_WEB_BROWSER";
 
 	// CLICK LISTENERS
 
@@ -164,6 +173,35 @@ public class MainActivity extends AppCompatActivity {
 			}
 
 			@Override
+			public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+				super.onReceivedSslError(view, handler, error);
+				Log.e(TAG, "onReceivedSslError: " + error.toString());
+			}
+
+			@Override
+			public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+				super.onReceivedHttpError(view, request, errorResponse);
+				Log.e(TAG, "onReceivedHttpError: " + errorResponse.toString());
+			}
+
+			@Override
+			public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+				//super.onReceivedError(view, errorCode, description, failingUrl);
+				if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
+					Log.e(TAG, "onReceivedError:" + description);
+				}
+			}
+
+			@Override
+			public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+				//super.onReceivedError(view, request, error);
+				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+					String errorDescr = error.getDescription().toString();
+					Log.e(TAG, "onReceivedError:" + errorDescr);
+				}
+			}
+
+			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
 				if (Build.VERSION.SDK_INT >= 21) {
 					String url = request.getUrl().toString();
@@ -290,6 +328,17 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	// UTILS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	private void showAlert(@Nullable String title, @NonNull String message) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(message);
+		if (title != null && !title.isEmpty()) {
+			builder.setTitle(title);
+		}
+		builder.setPositiveButton(android.R.string.ok, null);
+		builder.setCancelable(false);
+		builder.create().show();
+	}
 
 	private void showToast(String message) {
 		Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
