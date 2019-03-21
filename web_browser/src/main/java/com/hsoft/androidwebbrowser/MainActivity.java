@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -88,12 +89,16 @@ public class MainActivity extends AppCompatActivity {
 		}
 	};
 
+	private MainActivity thisActivity;
+
 	// ACTIVITY - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		thisActivity = this;
 
 		homeUrl = "https://duckduckgo.com";
 		textUrl = findViewById(R.id.text_url);
@@ -314,12 +319,55 @@ public class MainActivity extends AppCompatActivity {
 			public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
 				return super.onJsPrompt(view, url, message, defaultValue, result);
 			}
+
+			@Override
+			public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+				// https://blog.maurizionapoleoni.com/opening-a-window-open-in-android-without-killing-the-content-of-the-main-webview/
+
+				// create new web view
+				WebView popup = new WebView(thisActivity);
+				popup.setWebViewClient(new WebViewClient() {
+					@Override
+					public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+						if (Build.VERSION.SDK_INT >= 21) {
+							String popUrl = request.getUrl().toString();
+							Log.d(TAG, "shouldOverrideUrlLoading: " + popUrl);
+							processPopupRequest(popUrl);
+						}
+						return true;
+					}
+
+					@Override
+					public boolean shouldOverrideUrlLoading(WebView view, String url) {
+						Log.d(TAG, "shouldOverrideUrlLoading: " + url);
+						processPopupRequest(url);
+						return true;
+					}
+
+					private void processPopupRequest(String popupUrl) {
+						Intent shareIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(popupUrl));
+						if (shareIntent.resolveActivity(thisActivity.getPackageManager()) != null) {
+							startActivity(shareIntent);
+						} else {
+							showToast("Could not resolve activity for popup URL");
+						}
+					}
+				});
+
+				WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+				transport.setWebView(popup);
+				resultMsg.sendToTarget();
+
+				return true;
+			}
 		});
 
 
 		// configure web view
 		WebSettings webSettings = webView.getSettings();
 		webSettings.setJavaScriptEnabled(true);
+		webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+		webSettings.setSupportMultipleWindows(true);
 	}
 
 	@Override
