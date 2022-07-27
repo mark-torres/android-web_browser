@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/AndroidWebBrowser.iml" filepath="$PROJECT_DIR$/AndroidWebBrowser.iml" />
-      <module fileurl="file://$PROJECT_DIR$/web_browser/web_browser.iml" filepath="$PROJECT_DIR$/web_browser/web_browser.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/WebBrowser.iml" filepath="$PROJECT_DIR$/.idea/modules/WebBrowser.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/web_browser/WebBrowser.web_browser.iml" filepath="$PROJECT_DIR$/.idea/modules/web_browser/WebBrowser.web_browser.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/web_browser/WebBrowser.web_browser.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/web_browser/WebBrowser.web_browser.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/web_browser/WebBrowser.web_browser.main.iml" filepath="$PROJECT_DIR$/.idea/modules/web_browser/WebBrowser.web_browser.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/web_browser/WebBrowser.web_browser.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/web_browser/WebBrowser.web_browser.unitTest.iml" />
     </modules>
   </component>
 </project>
